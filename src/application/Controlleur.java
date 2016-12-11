@@ -1,11 +1,6 @@
 package application;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import javafx.fxml.Initializable;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import models.Personnage2D;
 
 public class Controlleur {
@@ -15,11 +10,11 @@ public class Controlleur {
 
 	public Controlleur(){
 	}
-
-	public void init() {
-		
-		perso = new Personnage2D(0, 0, 100, 50, Color.AQUAMARINE, null);
 	
+	public void init(int x, int y, int width, int height, Color couleur){
+		
+		perso = new Personnage2D(x, y, width, height, couleur);
+		perso.ajoutFleches();
 	}
 
 	public Personnage2D getR0() {

@@ -10,8 +10,10 @@ import enums.Sens;
 //import application.Controlleur;
 //import application.JfxUtils;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import models.Fleche;
 import models.Mur2D;
 import models.Personnage2D;
 import models.Settings;
@@ -33,6 +35,7 @@ import javafx.scene.control.Button;
 import javafx.scene.shape.Circle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -62,7 +65,10 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	Thread ts_launch;
 	Thread te_launch;
 	
-	Double deltaChange = 0.5;
+	Double deltaChange = 0.95;
+	
+	private static Rectangle2D goal2D;
+	private static ImageView goal;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -82,81 +88,91 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		}
 	}
 	
-	public Rectangle gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage){
+	public Personnage2D gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage, ObservableList<Mur2D> observableList){
 		
-		Double surface_r = r.computeAreaInScreen();
-		double newSize;
-		double ecart;
+		if (r.getRectangle2D().intersects(goal2D)){
+			System.out.println("niveau réussi !");
+			
+			goal.setImage(new Image("goal_rouge.png"));
+		}
+		
+		r.setMurs(observableList);
 			
 		KeyCode kc = e.getCode();
 		
-		//System.out.println(kc.getName());
+		if(e.isShortcutDown() && e.isShiftDown()){
+			r.montrerLesFleches(true);
+		}
 		
-		switch (kc) {
+		else if(e.isShortcutDown()){
+			r.montrerLesFleches(false);
+		}
+		else {
+			r.cacherLesFleches();
+		}
+		
+		switch (kc) {		           
+		case Z:
 		case UP:   if(e.isShortcutDown()){
 			          if (e.isShiftDown() &&
 			        	  r.getWidth() > 20){
-			        	  	r.deformationVertical(0.95);
+			        	  	r.deformationBas(deltaChange);
 			          }
 			          else if (r.getHeight() > 20){
-			        	  r.deformationHorizontal(0.95);
+			        	  r.deformationHaut(1/deltaChange);
 			          }
+			          r.getFleches().get(Sens.HAUT).activation();
 		            }
 		            else {
 		            	  r.deplacement(0, -5);
 		            }
 			break;
+		case S :
 		case DOWN: if(e.isShortcutDown()){
 	          		  if (e.isShiftDown() &&
 	          			  r.getWidth() > 20){
-	          			  	r.deformationVertical(0.95);
+	          			  	r.deformationHaut(deltaChange);
 		              }
 		              else if (r.getHeight() > 20){
-		            	  r.deformationHorizontal(0.95);
+		            	  r.deformationBas(1/deltaChange);
 		              }
+	          		 r.getFleches().get(Sens.BAS).activation();
 	                }
 	                else {
 	            	  r.deplacement(0, 5);
 	                }
 		    break;
+		case Q :
 		case LEFT: if(e.isShortcutDown()){
 	          if (e.isShiftDown() &&
 		        	  r.getWidth() > 20){
-		        	  r.deformationVertical(0.95);
+		        	  r.deformationDroite(deltaChange);
 		          }
 		          else if (r.getHeight() > 20){
-		        	  r.deformationHorizontal(0.95);
+		        	  r.deformationGauche(1/deltaChange);
 		          }
+	              r.getFleches().get(Sens.GAUCHE).activation();
 	            }
 	            else {
 	            	  r.deplacement(-5, 0);
 	            }
 		    break;
+		case D :
 		case RIGHT:  if(e.isShortcutDown()){
 	          if (e.isShiftDown() &&
 		        	  r.getWidth() > 20){
-		        	  r.deformationVertical(0.95);
+		        	  r.deformationGauche(deltaChange);
 		          }
 		          else if (r.getHeight() > 20){
-		        	  r.deformationHorizontal(0.95);
+		        	  r.deformationDroite(1/deltaChange);
 		          }
+	              r.getFleches().get(Sens.DROITE).activation();
 	            }
 	            else {
 	            	  r.deplacement(5, 0);
 	            }
 		    break;
-		case Z: r.setY(r.getY() - Contact.rienNeBloque(r, Sens.HAUT, root));
-		        r.setFill(Color.PINK);
-		break;
-		case S: r.setY(r.getY() + Contact.rienNeBloque(r, Sens.BAS, root));
-		        r.setFill(Color.BLUE);
-		break;
-		case Q: r.setX(r.getX() - Contact.rienNeBloque(r, Sens.GAUCHE, root));
-		        r.setFill(Color.ORANGE);
-		break;
-		case D: r.setX(r.getX() + Contact.rienNeBloque(r, Sens.DROITE, root));
-		        r.setFill(Color.GREENYELLOW);
-		break;
+
 		case NUMPAD9 : r.setFill(Color.BLACK);
         break;
 		case NUMPAD8 : r.setFill(Color.CHOCOLATE);
@@ -186,7 +202,7 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		return r;		
 	}
 	
-    public Rectangle gerer_clicks(Rectangle r, MouseEvent e){
+    public Personnage2D gerer_clicks(Personnage2D r, MouseEvent e){
 		
 		r.setX(e.getSceneX());
 		r.setY(e.getSceneY());
@@ -408,5 +424,13 @@ public class Main_Exercice_04 extends Application implements Initializable{
 			
 		}
 	};
-	
+
+	public static Rectangle2D getGoal2D() {
+		return goal2D;
+	}
+
+	public static void setGoal2D(ImageView im) {
+		goal = im;
+		goal2D = new Rectangle2D(im.getX(), im.getY(), im.getImage().getWidth(), im.getImage().getHeight());
+	}
 }

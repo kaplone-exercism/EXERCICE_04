@@ -10,19 +10,28 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import enums.Orientation;
+import enums.Sens;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import models.Fleche;
 import models.Mur2D;
 import models.Personnage2D;
 
@@ -31,7 +40,10 @@ public class ControlleurNiveaux implements Initializable{
 	String home =  System.getProperty("user.home");
 	File settings_file = new File(home, "shapesinthemazes_niveaux.txt");
 	
+	Controlleur ct;
 	
+	private static Image im;
+	private static ImageView imv;
 	
 	public AnchorPane init(AnchorPane root, Main_Exercice_04 main_Exercice_04) {
 
@@ -50,7 +62,8 @@ public class ControlleurNiveaux implements Initializable{
         Label l = null;
         AnchorPane preview = null;
         AnchorPane fullGame = null;
-        final Map<Node, AnchorPane> tableauDesNiveaux = new HashMap<>();
+        final Map<AnchorPane, AnchorPane> tableauDesNiveaux = new HashMap<>();
+        final Map<AnchorPane, Controlleur> tableauDesPersos = new HashMap<>();
     	
 		try {
 			fr = new FileReader(settings_file);
@@ -65,34 +78,47 @@ public class ControlleurNiveaux implements Initializable{
 	    		}
 	    		
 	    		else if(s.startsWith("[")){
-	    			
+
 	    			if (hb != null){
 	    				
 	    				hb.getChildren().add(preview);
 	    				vb.getChildren().add(hb);
 	    				tableauDesNiveaux.put(preview, fullGame);
+	    				tableauDesPersos.put(preview, ct);
 	    				
-	    				preview.setOnMouseClicked(a -> {
-	    					
-	    					Controlleur ct = new Controlleur();
-	    					ct.init();
-	    					final Personnage2D r0 = ct.getR0();
+	    				ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
+	    				
+	    				preview.setOnMouseClicked(b -> {
 
-	    					AnchorPane root_ = tableauDesNiveaux.get(a.getSource());
+	    					AnchorPane root_ = tableauDesNiveaux.get(b.getSource());
+	    					
+	    					Personnage2D r0 = tableauDesPersos.get(b.getSource()).getR0();
+	    					
+	    					Fleche fb = r0.getFleches().get(Sens.BAS);
+	    					Fleche fh = r0.getFleches().get(Sens.HAUT);
+	    					Fleche fd = r0.getFleches().get(Sens.DROITE);
+	    					Fleche fg = r0.getFleches().get(Sens.GAUCHE);
+	    					
 	    					root_.getChildren().add(0, r0);
+	    					root_.getChildren().addAll(fb, fh, fd, fg);
+	    					
+	    					r0.cacherLesFleches();
 
 	    					scene.setRoot(root_);
 		    				Stage stagePrincipal = (Stage) scene.getWindow();
 		    				
-		    				stagePrincipal.setWidth(1000);
-		    				stagePrincipal.setHeight(600);
-		    				
+		    				stagePrincipal.setWidth(1005);
+		    				stagePrincipal.setHeight(635);
+
 		    				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal));
+		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs));
 		    			});
 	    				
 	    			}
 	    			
+	    			
+	    			ct = new Controlleur();
+
 	    			hb = new HBox();
 	    			hb.setPadding(new Insets(20));
 	    			preview = new AnchorPane();
@@ -109,51 +135,103 @@ public class ControlleurNiveaux implements Initializable{
 	    						
 	    		}
 	    		else {
+	    			String marqueur = s.split("=")[0].trim().toUpperCase();
 	    			String ligne = s.split("=")[1];
 	    			
-	    			Orientation or = Orientation.valueOf(ligne.split(",")[0].trim());
+	    			if ("PERSO".equals(marqueur)){
+	    				Color couleur = Color.valueOf(ligne.split(",")[0].trim());
+	    				int x = Integer.parseInt(ligne.split(",")[1].trim());
+		    			int y = Integer.parseInt(ligne.split(",")[2].trim());
+		    			int w = Integer.parseInt(ligne.split(",")[3].trim());
+		    			int h = Integer.parseInt(ligne.split(",")[4].trim());
+
+		    			ct.init(x, y, w, h, couleur);
+	    			}
+	    			else if ("MUR".equals(marqueur)){
+	    				
+	    				Orientation or = Orientation.valueOf(ligne.split(",")[0].trim());
+		    			
+		    			int epais = Integer.parseInt(ligne.split(",")[1].trim());
+		    			int dist = Integer.parseInt(ligne.split(",")[2].trim());
+		    			int debut = Integer.parseInt(ligne.split(",")[3].trim());
+		    			int fin = Integer.parseInt(ligne.split(",")[4].trim());
+		    			fullGame.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
+		    			
+		    			epais = epais / 5;
+		    			dist = dist / 5;
+		    			debut = debut / 5;
+		    			fin = fin / 5;
+		    			
+		    			preview.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
+	    			}	
+	    			else if ("GOAL".equals(marqueur)){
+	    				
+	    				int x = Integer.parseInt(ligne.split(",")[0].trim());
+		    			int y = Integer.parseInt(ligne.split(",")[1].trim());
+		    			im = new Image("goal.png");
+		    			imv = new ImageView(im);
+		    			imv.setX(x);
+		    			imv.setY(y);
+		    			
+	    				fullGame.getChildren().add(imv);
+	    				Main_Exercice_04.setGoal2D(imv);
+	    			}
 	    			
-	    			int epais = Integer.parseInt(ligne.split(",")[1].trim());
-	    			int dist = Integer.parseInt(ligne.split(",")[2].trim());
-	    			int debut = Integer.parseInt(ligne.split(",")[3].trim());
-	    			int fin = Integer.parseInt(ligne.split(",")[4].trim());
-	    			fullGame.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
-	    			
-	    			epais = epais / 5;
-	    			dist = dist / 5;
-	    			debut = debut / 5;
-	    			fin = fin / 5;
-	    			
-	    			preview.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
+                    else if ("INFOS".equals(marqueur)){
+	    				
+                    	String infos = ligne.split(";")[0].trim();
+	    				int x = Integer.parseInt(ligne.split(";")[1].trim());
+		    			int y = Integer.parseInt(ligne.split(";")[2].trim());
+		    			int w = Integer.parseInt(ligne.split(";")[3].trim());
+		    			
+		    			Label text = new Label(infos);
+		    			text.setWrapText(true);
+		    			text.setLayoutX(x);
+		    			text.setLayoutY(y);
+		    			text.setPrefWidth(w);
+		    			text.setOpacity(0.50);
+		    			
+	    				fullGame.getChildren().add(text);
+	    			}
 	    		}
+	    		
 	    		s = br.readLine();
 	    	}
 	    	
 	    	hb.getChildren().add(preview);
 			vb.getChildren().add(hb);
 			tableauDesNiveaux.put(preview, fullGame);
-		
+			tableauDesPersos.put(preview, ct);
+			
+			ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
+			
 			preview.setOnMouseClicked(a -> {
-				
-				Controlleur ct = new Controlleur();
-				ct.init();
+		        
+			    Controlleur ct = tableauDesPersos.get(a.getSource());
 				final Personnage2D r0 = ct.getR0();
+				
+				Fleche fb = r0.getFleches().get(Sens.BAS);
+				Fleche fh = r0.getFleches().get(Sens.HAUT);
+				Fleche fd = r0.getFleches().get(Sens.DROITE);
+				Fleche fg = r0.getFleches().get(Sens.GAUCHE);
 				
 				AnchorPane root_ = tableauDesNiveaux.get(a.getSource());
 				
 				root_.getChildren().add(0, r0);
+				root_.getChildren().addAll(fb, fh, fd, fg);
+				
+				r0.cacherLesFleches();
 
 				scene.setRoot(root_);
 				Stage stagePrincipal = (Stage) scene.getWindow();
 				
-				stagePrincipal.setFullScreen(true);
-				
-				
-				stagePrincipal.setWidth(1000);
-				stagePrincipal.setHeight(600);
+				//stagePrincipal.setFullScreen(true);
+
+				stagePrincipal.setWidth(1005);
+				stagePrincipal.setHeight(635);
 				
 				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal));
+				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs));				
 			});
 			
 		} catch (IOException e) {
@@ -165,6 +243,22 @@ public class ControlleurNiveaux implements Initializable{
 		sc.setContent(vb);
 		root.getChildren().add(sc);
 		return root;
+	}
+	
+	public ObservableList<Mur2D> listeDesMurs(ObservableList<Node> listeDesNoeuds){
+		
+		ObservableList<Mur2D> retour = FXCollections.observableArrayList();
+		
+		for (Node n : listeDesNoeuds){
+			if (n instanceof Mur2D){
+				retour.add((Mur2D)n);
+			}
+		}
+		return retour;
+	}
+
+	public static void setImage(String im) {
+		imv.setImage(new Image(im));
 	}
 
 	@Override
