@@ -93,7 +93,7 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		if (r.getRectangle2D().intersects(goal2D)){
 			System.out.println("niveau réussi !");
 			
-			goal.setImage(new Image("goal_rouge.png"));
+			goal.setImage(new Image("goal_vert.png"));
 		}
 		
 		r.setMurs(observableList);
