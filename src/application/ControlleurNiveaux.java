@@ -32,6 +32,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import models.Fleche;
+import models.Goal2D;
 import models.Mur2D;
 import models.Personnage2D;
 
@@ -62,8 +63,10 @@ public class ControlleurNiveaux implements Initializable{
         Label l = null;
         AnchorPane preview = null;
         AnchorPane fullGame = null;
+        Goal2D goal = null;
         final Map<AnchorPane, AnchorPane> tableauDesNiveaux = new HashMap<>();
         final Map<AnchorPane, Controlleur> tableauDesPersos = new HashMap<>();
+        final Map<AnchorPane, Goal2D> tableauDesGoals = new HashMap<>();
     	
 		try {
 			fr = new FileReader(settings_file);
@@ -85,6 +88,7 @@ public class ControlleurNiveaux implements Initializable{
 	    				vb.getChildren().add(hb);
 	    				tableauDesNiveaux.put(preview, fullGame);
 	    				tableauDesPersos.put(preview, ct);
+	    				tableauDesGoals.put(preview, goal);
 	    				
 	    				ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
 	    				
@@ -94,13 +98,15 @@ public class ControlleurNiveaux implements Initializable{
 	    					
 	    					Personnage2D r0 = tableauDesPersos.get(b.getSource()).getR0();
 	    					
+	    					Goal2D g0 = tableauDesGoals.get(b.getSource());
+	    					
 	    					Fleche fb = r0.getFleches().get(Sens.BAS);
 	    					Fleche fh = r0.getFleches().get(Sens.HAUT);
 	    					Fleche fd = r0.getFleches().get(Sens.DROITE);
 	    					Fleche fg = r0.getFleches().get(Sens.GAUCHE);
 	    					
 	    					root_.getChildren().add(0, r0);
-	    					root_.getChildren().addAll(fb, fh, fd, fg);
+	    					root_.getChildren().addAll(fb, fh, fd, fg, g0);
 	    					
 	    					r0.cacherLesFleches();
 
@@ -111,7 +117,7 @@ public class ControlleurNiveaux implements Initializable{
 		    				stagePrincipal.setHeight(635);
 
 		    				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs));
+		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));
 		    			});
 	    				
 	    			}
@@ -168,13 +174,14 @@ public class ControlleurNiveaux implements Initializable{
 	    				
 	    				int x = Integer.parseInt(ligne.split(",")[0].trim());
 		    			int y = Integer.parseInt(ligne.split(",")[1].trim());
-		    			im = new Image("goal.png");
-		    			imv = new ImageView(im);
-		    			imv.setX(x);
-		    			imv.setY(y);
+//		    			im = new Image("goal.png");
+//		    			imv = new ImageView(im);
+//		    			imv.setX(x);
+//		    			imv.setY(y);
+		    		    goal = new Goal2D(x, y);
 		    			
-	    				fullGame.getChildren().add(imv);
-	    				Main_Exercice_04.setGoal2D(imv);
+//	    				fullGame.getChildren().add(imv);
+//	    				Main_Exercice_04.setGoal2D(imv);
 	    			}
 	    			
                     else if ("INFOS".equals(marqueur)){
@@ -202,6 +209,7 @@ public class ControlleurNiveaux implements Initializable{
 			vb.getChildren().add(hb);
 			tableauDesNiveaux.put(preview, fullGame);
 			tableauDesPersos.put(preview, ct);
+			tableauDesGoals.put(preview, goal);
 			
 			ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
 			
@@ -216,6 +224,7 @@ public class ControlleurNiveaux implements Initializable{
 				Fleche fg = r0.getFleches().get(Sens.GAUCHE);
 				
 				AnchorPane root_ = tableauDesNiveaux.get(a.getSource());
+				Goal2D g0 = tableauDesGoals.get(a.getSource());
 				
 				root_.getChildren().add(0, r0);
 				root_.getChildren().addAll(fb, fh, fd, fg);
@@ -231,7 +240,7 @@ public class ControlleurNiveaux implements Initializable{
 				stagePrincipal.setHeight(635);
 				
 				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs));				
+				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));				
 			});
 			
 		} catch (IOException e) {

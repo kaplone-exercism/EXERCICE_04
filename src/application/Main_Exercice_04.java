@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import models.Fleche;
+import models.Goal2D;
 import models.Mur2D;
 import models.Personnage2D;
 import models.Settings;
@@ -67,8 +68,7 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	
 	Double deltaChange = 0.95;
 	
-	private static Rectangle2D goal2D;
-	private static ImageView goal;
+	private AnchorPane fen_scores = null;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -88,12 +88,15 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		}
 	}
 	
-	public Personnage2D gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage, ObservableList<Mur2D> observableList){
+	public Personnage2D gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage, ObservableList<Mur2D> observableList, ImageView goal, Rectangle2D goal2D){
 		
-		if (r.getRectangle2D().intersects(goal2D)){
-			System.out.println("niveau réussi !");
+		
+		
+        if (r.getRectangle2D().intersects(goal2D)){
 			
 			goal.setImage(new Image("goal_vert.png"));
+			
+			afficherSores();
 		}
 		
 		r.setMurs(observableList);
@@ -202,7 +205,15 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		return r;		
 	}
 	
-    public Personnage2D gerer_clicks(Personnage2D r, MouseEvent e){
+    private void afficherSores() {
+
+    	if (fen_scores == null){
+    		fen_scores = new FenetreScores();
+    	}
+	
+	}
+
+	public Personnage2D gerer_clicks(Personnage2D r, MouseEvent e){
 		
 		r.setX(e.getSceneX());
 		r.setY(e.getSceneY());
@@ -425,12 +436,12 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		}
 	};
 
-	public static Rectangle2D getGoal2D() {
-		return goal2D;
-	}
-
-	public static void setGoal2D(ImageView im) {
-		goal = im;
-		goal2D = new Rectangle2D(im.getX(), im.getY(), im.getImage().getWidth(), im.getImage().getHeight());
-	}
+//	public static Rectangle2D getGoal2D() {
+//		return goal2D;
+//	}
+//
+//	public static void setGoal2D(ImageView im) {
+//		goal = im;
+//		goal2D = new Rectangle2D(im.getX(), im.getY(), im.getImage().getWidth(), im.getImage().getHeight());
+//	}
 }
