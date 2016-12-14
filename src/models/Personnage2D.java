@@ -26,10 +26,7 @@ public class Personnage2D extends Rectangle {
 		
 		this.setFill(fill);
 		this.rectangle2D = new Rectangle2D(x, y, width, height);
-		
 		this.surface = width * height;
-		System.out.println(surface);
-		this.murs = murs;
 		
 		fleches = new HashMap<Sens, Fleche>();
 		
@@ -122,14 +119,11 @@ public class Personnage2D extends Rectangle {
 				return false;
 			}
 		}
-		return true;
-		
+		return true;		
 	}
 	
-public boolean enContact(){
-		
-		return ! sansContact();
-		
+    public boolean enContact(){
+		return ! sansContact();	
 	}
 	
     public void deformationGauche(double ratio){

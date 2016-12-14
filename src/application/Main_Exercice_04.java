@@ -1,43 +1,27 @@
 package application;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import enums.Orientation;
 import enums.Sens;
-//import application.Contact;
-//import application.Controlleur;
-//import application.JfxUtils;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import models.Fleche;
-import models.Goal2D;
+
 import models.Mur2D;
 import models.Personnage2D;
-import models.Settings;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Button;
-import javafx.scene.shape.Circle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 
 public class Main_Exercice_04 extends Application implements Initializable{
@@ -96,7 +80,8 @@ public class Main_Exercice_04 extends Application implements Initializable{
 			
 			goal.setImage(new Image("goal_vert.png"));
 			
-			afficherSores();
+			inactive(root);
+			afficherSores(root);
 		}
 		
 		r.setMurs(observableList);
@@ -205,10 +190,21 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		return r;		
 	}
 	
-    private void afficherSores() {
+	public void inactive(AnchorPane root){
+		root.setDisable(true);
+    	root.setOpacity(0.6);
+	}
+	
+    private void afficherSores(AnchorPane root) {
 
     	if (fen_scores == null){
     		fen_scores = new FenetreScores();
+    		
+    		Stage fenStage = (Stage) fen_scores.getScene().getWindow();
+    		fenStage.setOnCloseRequest(a -> {
+    			fen_scores = null;
+    			nouvelleFenetre(root);
+    		});
     	}
 	
 	}
@@ -237,6 +233,19 @@ public class Main_Exercice_04 extends Application implements Initializable{
 
 		ControlleurNiveaux ctn = new ControlleurNiveaux();
 		root = ctn.init(root, this);
+		
+		root.setDisable(false);
+		root.setOpacity(1);
+		
+		stagePrincipal.setWidth(600);
+		stagePrincipal.setHeight(455);
+	
+	}
+	
+    public void nouvelleFenetre(AnchorPane root){
+		
+		this.root = root;
+		nouvelleFenetre();
 	
 	}
 	
@@ -431,17 +440,7 @@ public class Main_Exercice_04 extends Application implements Initializable{
 					exit.setImage(new Image("exit.png"));
 					e.printStackTrace();
 				}
-			}
-			
+			}		
 		}
 	};
-
-//	public static Rectangle2D getGoal2D() {
-//		return goal2D;
-//	}
-//
-//	public static void setGoal2D(ImageView im) {
-//		goal = im;
-//		goal2D = new Rectangle2D(im.getX(), im.getY(), im.getImage().getWidth(), im.getImage().getHeight());
-//	}
 }

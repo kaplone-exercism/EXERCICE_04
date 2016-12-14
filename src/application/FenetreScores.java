@@ -2,8 +2,16 @@ package application;
 
 import java.util.Date;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 
 import javafx.scene.control.*;
@@ -23,22 +31,28 @@ public class FenetreScores extends AnchorPane{
 	}
 	
 	public FenetreScores() {
-		
-		System.out.println("appel du constructeur de la fenetre des scores");
+
 		Stage stageScores = new Stage();
 
-		//stageScores.initStyle(StageStyle.UNDECORATED);
+		stageScores.initStyle(StageStyle.UNDECORATED);
 		Label bravo = new Label("BRAVO, Practice terminé !");
 		Button fermer = new Button ("ok");
-		this.getChildren().addAll(bravo, fermer);
+		VBox vb = new VBox();
+		vb.setAlignment(Pos.CENTER);
+		VBox.setMargin(bravo, new Insets(10, 20, 10, 20));
+		VBox.setMargin(fermer, new Insets(40));
+		vb.setSpacing(30);
 		
-		fermer.setOnAction(a -> stageScores.close());
+		this.setBackground(new Background(new BackgroundFill(Color.GREENYELLOW, new CornerRadii(10) ,Insets.EMPTY)));
+		vb.getChildren().addAll(bravo, fermer);
+		this.getChildren().add(vb);	
+		
+		fermer.setOnAction(a -> stageScores.fireEvent(new WindowEvent(stageScores, WindowEvent.WINDOW_CLOSE_REQUEST)));
 		
 		Scene SceneScores = new Scene(this, 200, 150);
+		stageScores.setScene(SceneScores);
 		stageScores.sizeToScene();
-		stageScores.show();
-		
-		//stageScores.setOnCloseRequest(a -> ); deplacer dans Main
+		stageScores.show();	
 	}
 
 	public int getScore() {
