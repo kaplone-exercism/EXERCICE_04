@@ -118,6 +118,15 @@ public class ControlleurNiveaux implements Initializable{
 
 		    				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
 		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));
+		    				
+		    				for (Mur2D mur : listeMurs){
+		    					mur.setOnMouseEntered(c -> {
+		    						main_Exercice_04.afficheInfos(root_, mur, c, true);
+		    					});
+		    					mur.setOnMouseExited(d -> {
+		    						main_Exercice_04.afficheInfos(root_, mur, d, false);
+		    					});
+		    				}
 		    			});
 	    				
 	    			}
@@ -161,27 +170,21 @@ public class ControlleurNiveaux implements Initializable{
 		    			int dist = Integer.parseInt(ligne.split(",")[2].trim());
 		    			int debut = Integer.parseInt(ligne.split(",")[3].trim());
 		    			int fin = Integer.parseInt(ligne.split(",")[4].trim());
-		    			fullGame.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
+		    			String nom = ligne.split(",").length > 5 ? ligne.split(",")[5].trim() : "Sans nom";
+		    			fullGame.getChildren().add(new Mur2D(or, epais, dist, debut, fin, nom));
 		    			
 		    			epais = epais / 5;
 		    			dist = dist / 5;
 		    			debut = debut / 5;
 		    			fin = fin / 5;
 		    			
-		    			preview.getChildren().add(new Mur2D(or, epais, dist, debut, fin));
+		    			preview.getChildren().add(new Mur2D(or, epais, dist, debut, fin, nom));
 	    			}	
 	    			else if ("GOAL".equals(marqueur)){
 	    				
 	    				int x = Integer.parseInt(ligne.split(",")[0].trim());
 		    			int y = Integer.parseInt(ligne.split(",")[1].trim());
-//		    			im = new Image("goal.png");
-//		    			imv = new ImageView(im);
-//		    			imv.setX(x);
-//		    			imv.setY(y);
 		    		    goal = new Goal2D(x, y);
-		    			
-//	    				fullGame.getChildren().add(imv);
-//	    				Main_Exercice_04.setGoal2D(imv);
 	    			}
 	    			
                     else if ("INFOS".equals(marqueur)){
@@ -227,7 +230,7 @@ public class ControlleurNiveaux implements Initializable{
 				Goal2D g0 = tableauDesGoals.get(a.getSource());
 				
 				root_.getChildren().add(0, r0);
-				root_.getChildren().addAll(fb, fh, fd, fg);
+				root_.getChildren().addAll(fb, fh, fd, fg, g0);
 				
 				r0.cacherLesFleches();
 
@@ -240,7 +243,17 @@ public class ControlleurNiveaux implements Initializable{
 				stagePrincipal.setHeight(635);
 				
 				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));				
+				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));	
+				
+				for (Mur2D mur : listeMurs){
+					mur.setOnMouseEntered(c -> {
+						if (c.isAltDown())
+						main_Exercice_04.afficheInfos(root_, mur, c, true);
+					});
+					mur.setOnMouseExited(b -> {
+						main_Exercice_04.afficheInfos(root_, mur, b, false);
+					});
+				}
 			});
 			
 		} catch (IOException e) {

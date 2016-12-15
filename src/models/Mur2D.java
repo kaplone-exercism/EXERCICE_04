@@ -1,10 +1,9 @@
 package models;
 
-import java.util.List;
-
 import enums.Orientation;
-import enums.Sens;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
 public class Mur2D extends Rectangle{
@@ -14,9 +13,11 @@ public class Mur2D extends Rectangle{
 	private final int position;
 	private final int debut;
 	private final int fin;
+	private final String nom;
+	private Label infos;
 	private Rectangle2D rectangle2D;
 	
-	public Mur2D(Orientation orientation, int epaisseur, int position, int debut, int fin) {
+	public Mur2D(Orientation orientation, int epaisseur, int position, int debut, int fin, String nom) {
 		
 		super(orientation == Orientation.HORIZONTAL ? debut : position,
 		      orientation == Orientation.HORIZONTAL ? position : debut, 
@@ -28,6 +29,7 @@ public class Mur2D extends Rectangle{
 		this.position = position;
 		this.debut = debut;
 		this.fin = fin;
+		this.nom = nom;
 		this.setFill(Settings.getCouleurMurs());
 		
 		if(horizontal()){
@@ -35,7 +37,12 @@ public class Mur2D extends Rectangle{
 		}
 		else if(vertical()){
 			this.rectangle2D = new Rectangle2D(position, debut, epaisseur, fin - debut);
-		}	
+		}
+	}
+
+	@Override
+	public String toString(){
+		return String.format("%s :\nposition = %d\ndébut = %d\nfin = %d", this.nom, this.position, this.debut, this.fin);
 	}
 	
 	public boolean estEnContact(Rectangle2D r){		
@@ -76,5 +83,15 @@ public class Mur2D extends Rectangle{
 	
 	public boolean vertical(){
 		return this.orientation == Orientation.VERTICAL;
-	}		
+	}
+
+	public Label getInfos(MouseEvent me) {
+		return new Label(this.toString());
+	}
+
+	public void setInfos(Label infos) {
+		this.infos = infos;
+	}	
+	
+	
 }

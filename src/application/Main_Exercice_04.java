@@ -3,6 +3,8 @@ package application;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.sun.javafx.stage.StagePeerListener;
+
 import enums.Sens;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -11,16 +13,21 @@ import javafx.stage.Stage;
 import models.Mur2D;
 import models.Personnage2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 
@@ -52,6 +59,8 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	
 	Double deltaChange = 0.95;
 	
+	Label infos;
+	
 	private AnchorPane fen_scores = null;
 	
 	@Override
@@ -73,8 +82,6 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	}
 	
 	public Personnage2D gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage, ObservableList<Mur2D> observableList, ImageView goal, Rectangle2D goal2D){
-		
-		
 		
         if (r.getRectangle2D().intersects(goal2D)){
 			
@@ -193,6 +200,27 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	public void inactive(AnchorPane root){
 		root.setDisable(true);
     	root.setOpacity(0.6);
+	}
+	
+	public void afficheInfos(AnchorPane root, Mur2D mur, MouseEvent me, boolean aff){
+		
+		if (aff){
+			infos = mur.getInfos(me);
+			infos.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), Insets.EMPTY)));
+			root.getChildren().add(infos);
+			infos.setLayoutX(me.getSceneX() + 20);
+			infos.setLayoutY(me.getSceneY() + 10);
+			
+			mur.toFront();
+			mur.setStrokeWidth(2);
+			mur.setStroke(Color.CORAL);
+			
+		}
+		else {
+			root.getChildren().remove(infos);
+			infos = null;
+			mur.setStrokeWidth(0);
+		}
 	}
 	
     private void afficherSores(AnchorPane root) {
