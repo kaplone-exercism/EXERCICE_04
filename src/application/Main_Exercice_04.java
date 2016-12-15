@@ -14,6 +14,8 @@ import models.Mur2D;
 import models.Personnage2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -204,12 +206,21 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	
 	public void afficheInfos(AnchorPane root, Mur2D mur, MouseEvent me, boolean aff){
 		
+		DropShadow dropShadow = new DropShadow();
+		dropShadow.setRadius(5.0);
+		dropShadow.setOffsetX(3.0);
+		dropShadow.setOffsetY(3.0);
+		dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
+
+		
 		if (aff){
 			infos = mur.getInfos(me);
-			infos.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), Insets.EMPTY)));
+			infos.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(-5))));
 			root.getChildren().add(infos);
-			infos.setLayoutX(me.getSceneX() + 20);
-			infos.setLayoutY(me.getSceneY() + 10);
+			infos.setLayoutX(me.getSceneX() + 30);
+			infos.setLayoutY(me.getSceneY() + 20);
+			infos.setEffect(dropShadow);
+			infos.setStyle("-fx-border-color: grey; -fx-border-width: 1; -fx-border-style: solid inside; -fx-border-insets: -5;");
 			
 			mur.toFront();
 			mur.setStrokeWidth(2);

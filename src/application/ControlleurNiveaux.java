@@ -121,6 +121,7 @@ public class ControlleurNiveaux implements Initializable{
 		    				
 		    				for (Mur2D mur : listeMurs){
 		    					mur.setOnMouseEntered(c -> {
+		    						if (c.isAltDown())
 		    						main_Exercice_04.afficheInfos(root_, mur, c, true);
 		    					});
 		    					mur.setOnMouseExited(d -> {
