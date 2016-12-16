@@ -8,6 +8,9 @@ public class Settings {
 	static boolean couleurContact = false;
 	static Color couleurMurs = Color.BLACK;
 	
+	static boolean affPositionSouris = false;
+	static boolean affInfosMurs = false;
+	
 	public static boolean isRetourContact() {
 		return retourContact;
 	}
@@ -26,7 +29,20 @@ public class Settings {
 	public static void setCouleurMurs(Color couleurMurs) {
 		Settings.couleurMurs = couleurMurs;
 	}
+	public static boolean isAffPositionSouris() {
+		return affPositionSouris;
+	}
+	public static void setAffPositionSouris(boolean affPositionSouris) {
+		Settings.affPositionSouris = affPositionSouris;
+	}
+	public static boolean isAffInfosMurs() {
+		return affInfosMurs;
+	}
+	public static void setAffInfosMurs(boolean affInfosMurs) {
+		Settings.affInfosMurs = affInfosMurs;
+	}
 	
-	
-
+	public static boolean isEdition(){
+		return affInfosMurs || affPositionSouris;
+	}
 }

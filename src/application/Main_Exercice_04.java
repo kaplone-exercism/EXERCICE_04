@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import models.Mur2D;
 import models.Personnage2D;
+import models.Settings;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -62,6 +63,8 @@ public class Main_Exercice_04 extends Application implements Initializable{
 	Double deltaChange = 0.95;
 	
 	Label infos;
+	Label infosPosition = new Label();
+	boolean infosPositionExist = false;
 	
 	private AnchorPane fen_scores = null;
 	
@@ -204,6 +207,37 @@ public class Main_Exercice_04 extends Application implements Initializable{
     	root.setOpacity(0.6);
 	}
 	
+	public void gerer_sourisBouge(MouseEvent me, AnchorPane root, boolean aff){
+		
+		if (!infosPositionExist){
+			
+			DropShadow dropShadow = new DropShadow();
+			dropShadow.setRadius(5.0);
+			dropShadow.setOffsetX(3.0);
+			dropShadow.setOffsetY(3.0);
+			dropShadow.setColor(Color.color(0.5, 0.5, 0.5));
+
+			infosPosition.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(-5))));
+			root.getChildren().add(infosPosition);
+
+			infosPosition.setEffect(dropShadow);
+			infosPosition.setStyle("-fx-border-color: grey; -fx-border-width: 1; -fx-border-style: solid inside; -fx-border-insets: -5;");
+			
+			infosPositionExist = true;
+		}
+		
+		infosPosition.setText(String.format("X=%d\nY=%d", (int)me.getSceneX(), (int)me.getSceneY()));
+
+//		double decalageH = me.getSceneX() < (root.getWidth() - 50) ? 30 : -50;
+//		double decalageV = me.getSceneY() < (root.getHeight() - 40) ? 20 : -40;
+		
+		infosPosition.setLayoutX(me.getSceneX() -55);
+		infosPosition.setLayoutY(me.getSceneY() -45);
+		
+		infosPosition.setVisible(aff && Settings.isAffPositionSouris());
+		infosPosition.toFront();		
+	}
+	
 	public void afficheInfos(AnchorPane root, Mur2D mur, MouseEvent me, boolean aff){
 		
 		DropShadow dropShadow = new DropShadow();
@@ -213,12 +247,17 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
 
 		
-		if (aff){
+		if (aff && Settings.isAffInfosMurs()){
 			infos = mur.getInfos(me);
 			infos.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), new Insets(-5))));
-			root.getChildren().add(infos);
-			infos.setLayoutX(me.getSceneX() + 30);
-			infos.setLayoutY(me.getSceneY() + 20);
+			root.getChildren().add(infos);	
+			
+			double decalageH = me.getSceneX() < (root.getWidth() - 120) ? 30 : -120;
+			double decalageV = me.getSceneY() < (root.getHeight() - 80) ? 20 : -80;
+			
+			infos.setLayoutX(me.getSceneX() + decalageH);
+			infos.setLayoutY(me.getSceneY() + decalageV);
+			
 			infos.setEffect(dropShadow);
 			infos.setStyle("-fx-border-color: grey; -fx-border-width: 1; -fx-border-style: solid inside; -fx-border-insets: -5;");
 			

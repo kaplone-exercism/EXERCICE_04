@@ -24,6 +24,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -92,44 +93,14 @@ public class ControlleurNiveaux implements Initializable{
 	    				
 	    				ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
 	    				
-	    				preview.setOnMouseClicked(b -> {
-
-	    					AnchorPane root_ = tableauDesNiveaux.get(b.getSource());
-	    					
-	    					Personnage2D r0 = tableauDesPersos.get(b.getSource()).getR0();
-	    					
-	    					Goal2D g0 = tableauDesGoals.get(b.getSource());
-	    					
-	    					Fleche fb = r0.getFleches().get(Sens.BAS);
-	    					Fleche fh = r0.getFleches().get(Sens.HAUT);
-	    					Fleche fd = r0.getFleches().get(Sens.DROITE);
-	    					Fleche fg = r0.getFleches().get(Sens.GAUCHE);
-	    					
-	    					root_.getChildren().add(0, r0);
-	    					root_.getChildren().addAll(fb, fh, fd, fg, g0);
-	    					
-	    					r0.cacherLesFleches();
-
-	    					scene.setRoot(root_);
-		    				Stage stagePrincipal = (Stage) scene.getWindow();
-		    				
-		    				stagePrincipal.setWidth(1005);
-		    				stagePrincipal.setHeight(635);
-
-		    				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-		    				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));
-		    				
-		    				for (Mur2D mur : listeMurs){
-		    					mur.setOnMouseEntered(c -> {
-		    						if (c.isAltDown())
-		    						main_Exercice_04.afficheInfos(root_, mur, c, true);
-		    					});
-		    					mur.setOnMouseExited(d -> {
-		    						main_Exercice_04.afficheInfos(root_, mur, d, false);
-		    					});
-		    				}
-		    			});
-	    				
+	    				preview.setOnMouseClicked(b -> selectionneNiveau(b,
+	    						                                         tableauDesNiveaux, 
+	    						                                         tableauDesPersos, 
+	    						                                         tableauDesGoals, 
+	    						                                         listeMurs, 
+	    						                                         scene, 
+	    						                                         root, 
+	    						                                         main_Exercice_04));	
 	    			}
 	    			
 	    			
@@ -217,45 +188,14 @@ public class ControlleurNiveaux implements Initializable{
 			
 			ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
 			
-			preview.setOnMouseClicked(a -> {
-		        
-			    Controlleur ct = tableauDesPersos.get(a.getSource());
-				final Personnage2D r0 = ct.getR0();
-				
-				Fleche fb = r0.getFleches().get(Sens.BAS);
-				Fleche fh = r0.getFleches().get(Sens.HAUT);
-				Fleche fd = r0.getFleches().get(Sens.DROITE);
-				Fleche fg = r0.getFleches().get(Sens.GAUCHE);
-				
-				AnchorPane root_ = tableauDesNiveaux.get(a.getSource());
-				Goal2D g0 = tableauDesGoals.get(a.getSource());
-				
-				root_.getChildren().add(0, r0);
-				root_.getChildren().addAll(fb, fh, fd, fg, g0);
-				
-				r0.cacherLesFleches();
-
-				scene.setRoot(root_);
-				Stage stagePrincipal = (Stage) scene.getWindow();
-				
-				//stagePrincipal.setFullScreen(true);
-
-				stagePrincipal.setWidth(1005);
-				stagePrincipal.setHeight(635);
-				
-				root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-				scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));	
-				
-				for (Mur2D mur : listeMurs){
-					mur.setOnMouseEntered(c -> {
-						if (c.isAltDown())
-						main_Exercice_04.afficheInfos(root_, mur, c, true);
-					});
-					mur.setOnMouseExited(b -> {
-						main_Exercice_04.afficheInfos(root_, mur, b, false);
-					});
-				}
-			});
+			preview.setOnMouseClicked(b -> selectionneNiveau(b,
+                    tableauDesNiveaux, 
+                    tableauDesPersos, 
+                    tableauDesGoals, 
+                    listeMurs, 
+                    scene, 
+                    root, 
+                    main_Exercice_04));
 			
 		} catch (IOException e) {
 			// TODO Bloc catch généré automatiquement
@@ -266,6 +206,55 @@ public class ControlleurNiveaux implements Initializable{
 		sc.setContent(vb);
 		root.getChildren().add(sc);
 		return root;
+	}
+	
+	public void selectionneNiveau(MouseEvent me,
+			                 Map<AnchorPane,AnchorPane> tableauDesNiveaux,
+			                 Map<AnchorPane, Controlleur> tableauDesPersos,
+			                 Map<AnchorPane, Goal2D> tableauDesGoals,
+			                 ObservableList<Mur2D> listeMurs,
+			                 Scene scene,
+			                 AnchorPane root,
+			                 Main_Exercice_04 main_Exercice_04){
+		
+		AnchorPane root_ = tableauDesNiveaux.get(me.getSource());
+		
+		Personnage2D r0 = tableauDesPersos.get(me.getSource()).getR0();
+		
+		Goal2D g0 = tableauDesGoals.get(me.getSource());
+		
+		Fleche fb = r0.getFleches().get(Sens.BAS);
+		Fleche fh = r0.getFleches().get(Sens.HAUT);
+		Fleche fd = r0.getFleches().get(Sens.DROITE);
+		Fleche fg = r0.getFleches().get(Sens.GAUCHE);
+		
+		root_.getChildren().add(0, r0);
+		root_.getChildren().addAll(fb, fh, fd, fg, g0);
+		
+		r0.cacherLesFleches();
+
+		scene.setRoot(root_);
+		Stage stagePrincipal = (Stage) scene.getWindow();
+		
+		stagePrincipal.setWidth(1005);
+		stagePrincipal.setHeight(635);
+
+		root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
+		scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));
+		
+		for (Mur2D mur : listeMurs){
+			mur.setOnMouseEntered(c -> {
+				if (c.isAltDown())
+				main_Exercice_04.afficheInfos(root_, mur, c, true);
+			});
+			mur.setOnMouseExited(d -> {
+				main_Exercice_04.afficheInfos(root_, mur, d, false);
+			});
+		}
+		
+		scene.setOnMouseMoved(e -> {
+				main_Exercice_04.gerer_sourisBouge(e, root_, !e.isAltDown());
+		});
 	}
 	
 	public ObservableList<Mur2D> listeDesMurs(ObservableList<Node> listeDesNoeuds){

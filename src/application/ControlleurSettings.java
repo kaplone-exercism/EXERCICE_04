@@ -25,6 +25,12 @@ public class ControlleurSettings implements Initializable {
 	@FXML
 	CheckBox changeOnContact;
 	
+	@FXML
+	CheckBox affCoordSouris;
+	
+	@FXML
+	CheckBox AffInfosMur;
+	
 	Stage stage;
 	Main_Exercice_04 main;
 	
@@ -55,6 +61,12 @@ public class ControlleurSettings implements Initializable {
 		
 		moveOnContact.setSelected(Settings.isRetourContact());
 		moveOnContact.setOnAction(a -> Settings.setRetourContact(moveOnContact.isSelected()));
+		
+		affCoordSouris.setSelected(Settings.isAffPositionSouris());
+		affCoordSouris.setOnAction(a -> Settings.setAffPositionSouris(affCoordSouris.isSelected()));
+		
+		AffInfosMur.setSelected(Settings.isAffInfosMurs());
+		AffInfosMur.setOnAction(a -> Settings.setAffInfosMurs(AffInfosMur.isSelected()));
 		
 	}
 

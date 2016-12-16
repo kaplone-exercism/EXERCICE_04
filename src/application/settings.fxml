@@ -41,12 +41,25 @@
                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Label>
-                  <HBox alignment="CENTER_LEFT">
+                  <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="560.0">
                      <children>
                         <Label text="Couleur des murs : " />
-                        <ColorPicker fx:id="colorPicker" />
+                        <ColorPicker fx:id="colorPicker" minHeight="-Infinity" />
                      </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="20.0" />
+                     </VBox.margin>
                   </HBox>
+                  <CheckBox fx:id="affCoordSouris" mnemonicParsing="false" text="Afficher les coordonnées de la souris">
+                     <VBox.margin>
+                        <Insets left="20.0" top="20.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="AffInfosMur" mnemonicParsing="false" text="Afficher les infos sur les murs">
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </CheckBox>
                </children>
             </VBox>
          </children>
