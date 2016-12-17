@@ -39,7 +39,7 @@ public class Settings {
 		Settings.couleurPerso = couleurPerso;
 	}
 	public static Color getCouleurFond() {
-		return couleurFond != null ? couleurFond : Color.WHITESMOKE;
+		return couleurFond != null ? couleurFond : Color.WHITE;
 	}
 	public static void setCouleurFond(Color couleurFond) {
 		Settings.couleurFond = couleurFond;

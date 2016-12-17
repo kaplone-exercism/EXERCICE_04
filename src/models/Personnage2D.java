@@ -129,100 +129,179 @@ public class Personnage2D extends Rectangle {
     public void deformationGauche(double ratio){
     	
     	double widthSave = this.getWidth();
-    	double heightSave = this.getHeight();
-   	
-    	this.setWidth(this.widthProperty().multiply(ratio).doubleValue());    	
-    	this.setHeight(surface / this.getWidth());
+    	double delta = this.widthProperty().multiply(ratio).doubleValue() - widthSave;
     	
-    	if (this.getWidth() < 20){
-    		this.setWidth(20);	
-    	}
-    	else if(this.getHeight() < 20){
-    		deformationGauche(1/ratio);
+    	if(delta > 0){
+    		while (delta > 0 && deformationGaucheUnitaire(1)){
+    			delta--;
+    		}
     	}
     	else {
+    		while (delta < 0 && deformationGaucheUnitaire(-1)){
+    			delta++;
+    		}
+    	}
+    	
+    	updateRectangle2D();
+    }
+    
+    public boolean deformationGaucheUnitaire(int deformation){
+    	
+    	double widthSave = this.getWidth();
+ 	
+    	this.setWidth(Math.round(this.widthProperty().add(deformation).doubleValue()));
+    	if (this.getWidth() < 20){
+    		this.setWidth(20);
+    		return false;
+    	}
+    	
+    	this.setHeight(Math.round(surface / this.getWidth()));
+    	if(this.getHeight() < 20){
+    		this.setHeight(20);
+    		this.setWidth(Math.round(surface / this.getHeight()));
+    		return false;
+    	}
+    	
+    	deplacement(- deformation, 0);
+    	updateRectangle2D();
     		
-    		this.setX(this.getX() - (this.getWidth() - widthSave));
-    		
-    		updateRectangle2D();
-    		
-        	if (enContact()){
-        		deformationGauche(1/ratio);	
-        	}	
-    	}	
+        if (enContact()){
+        	deformationGaucheUnitaire(- deformation);	
+        	return false;
+        }	
+    	return true;
     }
     
     public void deformationDroite(double ratio){
     	
     	double widthSave = this.getWidth();
-    	double heightSave = this.getHeight();
-   	
-    	this.setWidth(this.widthProperty().multiply(ratio).doubleValue());    	
-    	this.setHeight(surface / this.getWidth());
+    	double delta = this.widthProperty().multiply(ratio).doubleValue() - widthSave;
     	
-    	if (this.getWidth() < 20){
-    		this.setWidth(20);	
-    	}
-    	else if(this.getHeight() < 20){
-    		deformationDroite(1/ratio);
+    	if(delta > 0){
+    		while (delta > 0 && deformationDroiteUnitaire(1)){
+    			delta--;
+    		}
     	}
     	else {
-    		updateRectangle2D();
-    		
-        	if (enContact()){
-        		deformationDroite(1/ratio);	
-        	}	
-    	}	
+    		while (delta < 0 && deformationDroiteUnitaire(-1)){
+    			delta++;
+    		}
+    	}
+    	
+    	updateRectangle2D();
+    }
+    public boolean deformationDroiteUnitaire(int deformation){
+       	
+    	this.setWidth(Math.round(this.widthProperty().add(deformation).doubleValue())); 
+    	if (this.getWidth() < 20){
+    		this.setWidth(20);	
+    		return false;
+    	}
+    	
+    	this.setHeight(Math.round(surface / this.getWidth()));
+    	if(this.getHeight() < 20){
+    		this.setHeight(20);
+    		this.setWidth(Math.round(surface / this.getHeight()));
+    		return false;
+    	}
+    	
+    	updateRectangle2D();
+	
+        if (enContact()){
+        	deformationDroiteUnitaire(- deformation);	
+        	return false;
+        }	
+        return true;
     }
     
     public void deformationHaut(double ratio){
     	
-    	double widthSave = this.getWidth();
     	double heightSave = this.getHeight();
-
-    	this.setHeight(this.heightProperty().multiply(ratio).doubleValue());
-    	this.setWidth(surface / this.getHeight());
-    	
-    	if (this.getHeight() < 20){
-    		this.setHeight(20);	
-    	}
-    	else if(this.getWidth() < 20){
-    		deformationHaut(1/ratio);
+    	double delta = this.heightProperty().multiply(ratio).doubleValue() - heightSave;
+	
+    	if(delta > 0){
+    		while (delta >= 0 && deformationHautUnitaire(1)){
+    			delta--;
+    		}
     	}
     	else {
-    		
-    		this.setY(this.getY() - (this.getHeight() - heightSave));
-    		
-    		updateRectangle2D();
-
-        	if (enContact()){
-        		deformationHaut(1/ratio);
-        	}	
-    	}	
+    		while (delta <= 0 && deformationHautUnitaire(-1)){
+    			delta++;
+    		}
+    	}
+    	updateRectangle2D();
 	}
     
-    public void deformationBas(double ratio){
+    public boolean deformationHautUnitaire(int deformation){
     	
-    	double widthSave = this.getWidth();
     	double heightSave = this.getHeight();
-
-    	this.setHeight(this.heightProperty().multiply(ratio).doubleValue());
-    	this.setWidth(surface / this.getHeight());
     	
+    	this.setHeight(Math.round(this.heightProperty().add(deformation).doubleValue()));
     	if (this.getHeight() < 20){
     		this.setHeight(20);	
+    		return false;
     	}
-    	else if(this.getWidth() < 20){
-    		deformationBas(1/ratio);
+
+    	this.setWidth(Math.round(surface / this.getHeight()));
+    	if(this.getWidth() < 20){
+    		this.setWidth(20);
+    		this.setHeight(Math.round(surface / this.getWidth()));
+    		return false;
+    	}
+	    
+    	deplacement(0, heightSave -this.getHeight());
+    	updateRectangle2D();
+
+        if (enContact()){
+        	deformationHautUnitaire( - deformation);
+        	return false;
+        }	
+        return true;
+    }
+    
+    public void deformationBas(double ratio){
+        
+    	double heightSave = this.getHeight();
+    	double delta = this.heightProperty().multiply(ratio).doubleValue() - heightSave;
+    	
+    	if(delta > 0){
+    		while (delta > 0 && deformationBasUnitaire(1)){
+    			delta--;
+    		}
     	}
     	else {
-    		updateRectangle2D();
-
-        	if (enContact()){
-        		deformationBas(1/ratio);
-        	}	
-    	}	
+    		while (delta < 0 && deformationBasUnitaire(-1)){
+    			delta++;
+    		}
+    	}
+    	
+    	updateRectangle2D();
 	}
+    
+    public boolean deformationBasUnitaire(int deformation){
+    	
+    	this.setHeight(Math.round(this.heightProperty().add(deformation).doubleValue()));
+    	if (this.getHeight() < 20){
+    		this.setHeight(20);	
+    		return false;
+    	}
+
+    	this.setWidth(Math.round(surface / this.getHeight()));
+    	if(this.getWidth() < 20){
+    		this.setWidth(20);
+    		this.setHeight(Math.round(surface / this.getWidth()));
+    		return false;
+    	}
+
+    	updateRectangle2D();
+
+        if (enContact()){
+        	deformationBasUnitaire(- deformation);
+        	return false;
+        }	
+    	
+    	return true;
+    }
     
     public void montrerLesFleches(boolean in){
     	
@@ -230,12 +309,14 @@ public class Personnage2D extends Rectangle {
     		for (Fleche f : fleches.values()){
     			f.setOut(false);
         		f.setVisible(true);
+        		f.toFront();
         	}
     	}
     	else {
     		for (Fleche f : fleches.values()){
     			f.setOut(true);
         		f.setVisible(true);
+        		f.toFront();
         	}
     	}
     }

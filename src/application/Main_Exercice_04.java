@@ -115,14 +115,13 @@ public class Main_Exercice_04 extends Application implements Initializable{
 			perso.cacherLesFleches();
 		}
 		
-		switch (kc) {		           
+		switch (kc) {
 		case Z:
 		case UP:   if(e.isShortcutDown()){
-			          if (e.isShiftDown() &&
-			        	  perso.getWidth() > 20){
-			        	     perso.deformationBas(deltaChange);
+			          if (e.isShiftDown()){
+			        	  perso.deformationBas(deltaChange);
 			          }
-			          else if (perso.getHeight() > 20){
+			          else {
 			        	  perso.deformationHaut(1/deltaChange);
 			          }
 			          perso.getFleches().get(Sens.HAUT).activation();
@@ -133,11 +132,10 @@ public class Main_Exercice_04 extends Application implements Initializable{
 			break;
 		case S :
 		case DOWN: if(e.isShortcutDown()){
-	          		  if (e.isShiftDown() &&
-	          			  perso.getWidth() > 20){
-	          			     perso.deformationHaut(deltaChange);
+	          		  if (e.isShiftDown()){
+	          			  perso.deformationHaut(deltaChange);
 		              }
-		              else if (perso.getHeight() > 20){
+		              else {
 		            	  perso.deformationBas(1/deltaChange);
 		              }
 	          		  perso.getFleches().get(Sens.BAS).activation();
@@ -148,33 +146,31 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		    break;
 		case Q :
 		case LEFT: if(e.isShortcutDown()){
-	          if (e.isShiftDown() &&
-	        		  perso.getWidth() > 20){
-	        	         perso.deformationDroite(deltaChange);
-		          }
-		          else if (perso.getHeight() > 20){
-		        	  perso.deformationGauche(1/deltaChange);
-		          }
-	              perso.getFleches().get(Sens.GAUCHE).activation();
-	            }
-	            else {
-	            	perso.deplacement(-5, 0);
-	            }
+	          		  if (e.isShiftDown()){
+	        	          perso.deformationDroite(deltaChange);
+		              }
+		              else {
+		        	      perso.deformationGauche(1/deltaChange);
+		              }
+	                  perso.getFleches().get(Sens.GAUCHE).activation();
+	              }
+	              else {
+	            	  perso.deplacement(-5, 0);
+	              }
 		    break;
 		case D :
 		case RIGHT:  if(e.isShortcutDown()){
-	          if (e.isShiftDown() &&
-	        		  perso.getWidth() > 20){
-	        	  perso.deformationGauche(deltaChange);
-		          }
-		          else if (perso.getHeight() > 20){
-		        	  perso.deformationDroite(1/deltaChange);
-		          }
-	          perso.getFleches().get(Sens.DROITE).activation();
-	            }
-	            else {
-	            	perso.deplacement(5, 0);
-	            }
+	                    if (e.isShiftDown()){
+	        	           perso.deformationGauche(deltaChange);
+		                }
+		                else {
+		        	       perso.deformationDroite(1/deltaChange);
+		                }
+	                    perso.getFleches().get(Sens.DROITE).activation();
+	                 }
+	                 else {
+	            	    perso.deplacement(5, 0);
+	                 }
 		    break;
 
 		case NUMPAD9 : perso.setFill(Color.BLACK);
