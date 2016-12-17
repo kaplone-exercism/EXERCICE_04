@@ -35,7 +35,9 @@ import javafx.stage.Stage;
 import models.Fleche;
 import models.Goal2D;
 import models.Mur2D;
+import models.Niveau;
 import models.Personnage2D;
+import models.Settings;
 
 public class ControlleurNiveaux implements Initializable{
 	
@@ -65,9 +67,8 @@ public class ControlleurNiveaux implements Initializable{
         AnchorPane preview = null;
         AnchorPane fullGame = null;
         Goal2D goal = null;
-        final Map<AnchorPane, AnchorPane> tableauDesNiveaux = new HashMap<>();
-        final Map<AnchorPane, Controlleur> tableauDesPersos = new HashMap<>();
-        final Map<AnchorPane, Goal2D> tableauDesGoals = new HashMap<>();
+        Niveau niveau = new Niveau();
+        final Map<AnchorPane, Niveau> tableauDesNiveaux = new HashMap<>();
     	
 		try {
 			fr = new FileReader(settings_file);
@@ -82,28 +83,25 @@ public class ControlleurNiveaux implements Initializable{
 	    		}
 	    		
 	    		else if(s.startsWith("[")){
-
-	    			if (hb != null){
+	    			
+	    			if(hb != null){
 	    				
 	    				hb.getChildren().add(preview);
 	    				vb.getChildren().add(hb);
-	    				tableauDesNiveaux.put(preview, fullGame);
-	    				tableauDesPersos.put(preview, ct);
-	    				tableauDesGoals.put(preview, goal);
-	    				
-	    				ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
+	    				niveau.setFullGame(fullGame);
+	    				niveau.setPreview(preview);
+	    				tableauDesNiveaux.put(preview, niveau);
 	    				
 	    				preview.setOnMouseClicked(b -> selectionneNiveau(b,
-	    						                                         tableauDesNiveaux, 
-	    						                                         tableauDesPersos, 
-	    						                                         tableauDesGoals, 
-	    						                                         listeMurs, 
-	    						                                         scene, 
-	    						                                         root, 
-	    						                                         main_Exercice_04));	
+	    	                    tableauDesNiveaux, 
+	    	                    root, 
+	    	                    scene,
+	    	                    main_Exercice_04));
+	    				
 	    			}
 	    			
-	    			
+	    			niveau = new Niveau();
+    			
 	    			ct = new Controlleur();
 
 	    			hb = new HBox();
@@ -111,28 +109,31 @@ public class ControlleurNiveaux implements Initializable{
 	    			preview = new AnchorPane();
 	    			preview.setPrefWidth(200);
 	    			preview.setPrefHeight(120);
-	    			preview.getChildren().add(new Rectangle(200,120, Color.WHITE));
+	    			preview.getChildren().add(new Rectangle(200,120, Settings.getCouleurFond()));
 	    			
 	    			fullGame = new AnchorPane();
 	    			fullGame.setPrefWidth(1000);
 	    			fullGame.setPrefHeight(600);
+	    			fullGame.getChildren().add(new Rectangle(1000,600, Settings.getCouleurFond()));
 	    			
-	    			l = new Label(s.split("\\[")[1].split("\\]")[0] + " : ");
-	    			hb.getChildren().add(l);
-	    						
+	    			niveau.setNom(s.split("\\[")[1].split("\\]")[0]);
+	    			
+	    			l = new Label(niveau.getNom() + " : ");
+	    			hb.getChildren().add(l);				
 	    		}
 	    		else {
 	    			String marqueur = s.split("=")[0].trim().toUpperCase();
 	    			String ligne = s.split("=")[1];
 	    			
 	    			if ("PERSO".equals(marqueur)){
-	    				Color couleur = Color.valueOf(ligne.split(",")[0].trim());
+	    				//Color couleur = Color.valueOf(ligne.split(",")[0].trim());
+	    				Color couleur = Settings.getCouleurPerso();
 	    				int x = Integer.parseInt(ligne.split(",")[1].trim());
 		    			int y = Integer.parseInt(ligne.split(",")[2].trim());
 		    			int w = Integer.parseInt(ligne.split(",")[3].trim());
 		    			int h = Integer.parseInt(ligne.split(",")[4].trim());
 
-		    			ct.init(x, y, w, h, couleur);
+		    			niveau.setPerso(ct.init(x, y, w, h, couleur, niveau));
 	    			}
 	    			else if ("MUR".equals(marqueur)){
 	    				
@@ -157,6 +158,7 @@ public class ControlleurNiveaux implements Initializable{
 	    				int x = Integer.parseInt(ligne.split(",")[0].trim());
 		    			int y = Integer.parseInt(ligne.split(",")[1].trim());
 		    		    goal = new Goal2D(x, y);
+		    		    niveau.setGoal2D(goal);
 	    			}
 	    			
                     else if ("INFOS".equals(marqueur)){
@@ -182,23 +184,17 @@ public class ControlleurNiveaux implements Initializable{
 	    	
 	    	hb.getChildren().add(preview);
 			vb.getChildren().add(hb);
-			tableauDesNiveaux.put(preview, fullGame);
-			tableauDesPersos.put(preview, ct);
-			tableauDesGoals.put(preview, goal);
-			
-			ObservableList<Mur2D> listeMurs = listeDesMurs(fullGame.getChildrenUnmodifiable());
+			niveau.setFullGame(fullGame);
+			niveau.setPreview(preview);
+			tableauDesNiveaux.put(preview, niveau);
 			
 			preview.setOnMouseClicked(b -> selectionneNiveau(b,
                     tableauDesNiveaux, 
-                    tableauDesPersos, 
-                    tableauDesGoals, 
-                    listeMurs, 
-                    scene, 
                     root, 
+                    scene,
                     main_Exercice_04));
 			
 		} catch (IOException e) {
-			// TODO Bloc catch généré automatiquement
 			e.printStackTrace();
 		}
 		
@@ -209,28 +205,26 @@ public class ControlleurNiveaux implements Initializable{
 	}
 	
 	public void selectionneNiveau(MouseEvent me,
-			                 Map<AnchorPane,AnchorPane> tableauDesNiveaux,
-			                 Map<AnchorPane, Controlleur> tableauDesPersos,
-			                 Map<AnchorPane, Goal2D> tableauDesGoals,
-			                 ObservableList<Mur2D> listeMurs,
-			                 Scene scene,
+			                 Map<AnchorPane,Niveau> tableauDesNiveaux,
 			                 AnchorPane root,
+			                 Scene scene,
 			                 Main_Exercice_04 main_Exercice_04){
 		
-		AnchorPane root_ = tableauDesNiveaux.get(me.getSource());
-		
-		Personnage2D r0 = tableauDesPersos.get(me.getSource()).getR0();
-		
-		Goal2D g0 = tableauDesGoals.get(me.getSource());
+		Niveau niveau = tableauDesNiveaux.get(me.getSource());
+		AnchorPane root_ = niveau.getFullGame();
+        
+		Personnage2D r0 = niveau.getPerso();
+		Goal2D g0 = niveau.getGoal2D();
 		
 		Fleche fb = r0.getFleches().get(Sens.BAS);
 		Fleche fh = r0.getFleches().get(Sens.HAUT);
 		Fleche fd = r0.getFleches().get(Sens.DROITE);
 		Fleche fg = r0.getFleches().get(Sens.GAUCHE);
 		
-		root_.getChildren().add(0, r0);
+		root_.getChildren().add(r0);
 		root_.getChildren().addAll(fb, fh, fd, fg, g0);
 		
+		r0.toFront();
 		r0.cacherLesFleches();
 
 		scene.setRoot(root_);
@@ -240,9 +234,9 @@ public class ControlleurNiveaux implements Initializable{
 		stagePrincipal.setHeight(635);
 
 		root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
-		scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(r0, e1, root_, stagePrincipal, listeMurs, g0.getImv(), g0.getRectangle2D()));
+		scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(e1, root_, stagePrincipal, niveau));
 		
-		for (Mur2D mur : listeMurs){
+		for (Mur2D mur : niveau.getListeDesMurs()){
 			mur.setOnMouseEntered(c -> {
 				if (c.isAltDown())
 				main_Exercice_04.afficheInfos(root_, mur, c, true);

@@ -43,13 +43,41 @@
                   </Label>
                   <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="560.0">
                      <children>
-                        <Label text="Couleur des murs : " />
+                        <Label text="Couleur des murs :          " />
                         <ColorPicker fx:id="colorPicker" minHeight="-Infinity" />
                      </children>
                      <VBox.margin>
-                        <Insets bottom="10.0" left="20.0" />
+                        <Insets left="20.0" />
                      </VBox.margin>
                   </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="560.0">
+                     <children>
+                        <Label text="Couleur du personnage : " />
+                        <ColorPicker fx:id="colorPicker1" minHeight="-Infinity" />
+                     </children>
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="560.0">
+                     <children>
+                        <Label text="Couleur du fond :            " />
+                        <ColorPicker fx:id="colorPicker2" minHeight="-Infinity" />
+                     </children>
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+            <Separator prefWidth="200.0" />
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+               <children>
+                  <Label text="Options d'édition :">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
                   <CheckBox fx:id="affCoordSouris" mnemonicParsing="false" text="Afficher les coordonnées de la souris">
                      <VBox.margin>
                         <Insets left="20.0" top="20.0" />

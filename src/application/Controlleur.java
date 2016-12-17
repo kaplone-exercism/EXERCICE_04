@@ -1,6 +1,7 @@
 package application;
 
 import javafx.scene.paint.Color;
+import models.Niveau;
 import models.Personnage2D;
 
 public class Controlleur {
@@ -11,10 +12,13 @@ public class Controlleur {
 	public Controlleur(){
 	}
 	
-	public void init(int x, int y, int width, int height, Color couleur){
+	public Personnage2D init(int x, int y, int width, int height, Color couleur, Niveau niveau){
 		
-		perso = new Personnage2D(x, y, width, height, couleur);
+		perso = new Personnage2D(x, y, width, height, couleur, niveau);
 		perso.ajoutFleches();
+		
+		return perso;
+
 	}
 
 	public Personnage2D getR0() {

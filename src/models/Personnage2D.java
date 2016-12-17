@@ -16,12 +16,11 @@ import enums.Sens;
 public class Personnage2D extends Rectangle {
 
 	private Rectangle2D rectangle2D;
-	
+	private Niveau niveau;
 	private final double surface;
-	private ObservableList<Mur2D> murs;
 	private Map<Sens, Fleche> fleches;
 	
-	public Personnage2D(double x, double y, double width, double height, Paint fill) {
+	public Personnage2D(double x, double y, double width, double height, Paint fill, Niveau niveau) {
 		super(x, y, width, height);
 		
 		this.setFill(fill);
@@ -30,6 +29,7 @@ public class Personnage2D extends Rectangle {
 		
 		fleches = new HashMap<Sens, Fleche>();
 		
+		this.niveau = niveau;
 	}
 	
 	public void ajoutFleches(){
@@ -114,7 +114,7 @@ public class Personnage2D extends Rectangle {
 	
 	public boolean sansContact(){
 		
-		for (Mur2D m2D : murs){
+		for (Mur2D m2D : niveau.getListeDesMurs()){
 			if (m2D.getRectangle2D().intersects(this.rectangle2D)){
 				return false;
 			}
@@ -258,15 +258,7 @@ public class Personnage2D extends Rectangle {
 	public Rectangle2D getRectangle2D() {
 		return rectangle2D;
 	}
-
-	public List<Mur2D> getMurs() {
-		return murs;
-	}
-
-	public void setMurs(ObservableList<Mur2D> murs) {
-		this.murs = murs;
-	}
-
+	
 	public Map<Sens, Fleche> getFleches() {
 		return fleches;
 	}

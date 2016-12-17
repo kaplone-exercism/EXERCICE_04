@@ -6,7 +6,9 @@ public class Settings {
 	
 	static boolean retourContact = false;
 	static boolean couleurContact = false;
-	static Color couleurMurs = Color.BLACK;
+	static Color couleurMurs;
+	static Color couleurPerso;
+	static Color couleurFond;
 	
 	static boolean affPositionSouris = false;
 	static boolean affInfosMurs = false;
@@ -24,10 +26,23 @@ public class Settings {
 		Settings.couleurContact = couleurContact;
 	}
 	public static Color getCouleurMurs() {
-		return couleurMurs;
+		return couleurMurs != null ? couleurMurs : Color.BLACK;
 	}
 	public static void setCouleurMurs(Color couleurMurs) {
 		Settings.couleurMurs = couleurMurs;
+	}
+	
+	public static Color getCouleurPerso() {
+		return couleurPerso != null ? couleurPerso : Color.MAROON;
+	}
+	public static void setCouleurPerso(Color couleurPerso) {
+		Settings.couleurPerso = couleurPerso;
+	}
+	public static Color getCouleurFond() {
+		return couleurFond != null ? couleurFond : Color.WHITESMOKE;
+	}
+	public static void setCouleurFond(Color couleurFond) {
+		Settings.couleurFond = couleurFond;
 	}
 	public static boolean isAffPositionSouris() {
 		return affPositionSouris;

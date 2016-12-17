@@ -9,9 +9,12 @@ import enums.Sens;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-
+import models.Fleche;
+import models.Goal2D;
 import models.Mur2D;
+import models.Niveau;
 import models.Personnage2D;
+import models.Sauvegarde;
 import models.Settings;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -86,120 +89,130 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		}
 	}
 	
-	public Personnage2D gerer_keys(Personnage2D r, KeyEvent e, AnchorPane root, Stage importedstage, ObservableList<Mur2D> observableList, ImageView goal, Rectangle2D goal2D){
+	public Personnage2D gerer_keys(KeyEvent e, AnchorPane root, Stage importedstage, Niveau niveau){
 		
-        if (r.getRectangle2D().intersects(goal2D)){
+		Personnage2D perso = niveau.getPerso();
+		Goal2D goal2D = niveau.getGoal2D();
+		
+        if (perso.getRectangle2D().intersects(goal2D.getRectangle2D())){
 			
-			goal.setImage(new Image("goal_vert.png"));
+        	goal2D.setImage(new Image("goal_vert.png"));
 			
 			inactive(root);
 			afficherSores(root);
 		}
-		
-		r.setMurs(observableList);
 			
 		KeyCode kc = e.getCode();
 		
 		if(e.isShortcutDown() && e.isShiftDown()){
-			r.montrerLesFleches(true);
+			perso.montrerLesFleches(true);
 		}
 		
 		else if(e.isShortcutDown()){
-			r.montrerLesFleches(false);
+			perso.montrerLesFleches(false);
 		}
 		else {
-			r.cacherLesFleches();
+			perso.cacherLesFleches();
 		}
 		
 		switch (kc) {		           
 		case Z:
 		case UP:   if(e.isShortcutDown()){
 			          if (e.isShiftDown() &&
-			        	  r.getWidth() > 20){
-			        	  	r.deformationBas(deltaChange);
+			        	  perso.getWidth() > 20){
+			        	     perso.deformationBas(deltaChange);
 			          }
-			          else if (r.getHeight() > 20){
-			        	  r.deformationHaut(1/deltaChange);
+			          else if (perso.getHeight() > 20){
+			        	  perso.deformationHaut(1/deltaChange);
 			          }
-			          r.getFleches().get(Sens.HAUT).activation();
+			          perso.getFleches().get(Sens.HAUT).activation();
 		            }
 		            else {
-		            	  r.deplacement(0, -5);
+		            	perso.deplacement(0, -5);
 		            }
 			break;
 		case S :
 		case DOWN: if(e.isShortcutDown()){
 	          		  if (e.isShiftDown() &&
-	          			  r.getWidth() > 20){
-	          			  	r.deformationHaut(deltaChange);
+	          			  perso.getWidth() > 20){
+	          			     perso.deformationHaut(deltaChange);
 		              }
-		              else if (r.getHeight() > 20){
-		            	  r.deformationBas(1/deltaChange);
+		              else if (perso.getHeight() > 20){
+		            	  perso.deformationBas(1/deltaChange);
 		              }
-	          		 r.getFleches().get(Sens.BAS).activation();
+	          		  perso.getFleches().get(Sens.BAS).activation();
 	                }
 	                else {
-	            	  r.deplacement(0, 5);
+	                	perso.deplacement(0, 5);
 	                }
 		    break;
 		case Q :
 		case LEFT: if(e.isShortcutDown()){
 	          if (e.isShiftDown() &&
-		        	  r.getWidth() > 20){
-		        	  r.deformationDroite(deltaChange);
+	        		  perso.getWidth() > 20){
+	        	         perso.deformationDroite(deltaChange);
 		          }
-		          else if (r.getHeight() > 20){
-		        	  r.deformationGauche(1/deltaChange);
+		          else if (perso.getHeight() > 20){
+		        	  perso.deformationGauche(1/deltaChange);
 		          }
-	              r.getFleches().get(Sens.GAUCHE).activation();
+	              perso.getFleches().get(Sens.GAUCHE).activation();
 	            }
 	            else {
-	            	  r.deplacement(-5, 0);
+	            	perso.deplacement(-5, 0);
 	            }
 		    break;
 		case D :
 		case RIGHT:  if(e.isShortcutDown()){
 	          if (e.isShiftDown() &&
-		        	  r.getWidth() > 20){
-		        	  r.deformationGauche(deltaChange);
+	        		  perso.getWidth() > 20){
+	        	  perso.deformationGauche(deltaChange);
 		          }
-		          else if (r.getHeight() > 20){
-		        	  r.deformationDroite(1/deltaChange);
+		          else if (perso.getHeight() > 20){
+		        	  perso.deformationDroite(1/deltaChange);
 		          }
-	              r.getFleches().get(Sens.DROITE).activation();
+	          perso.getFleches().get(Sens.DROITE).activation();
 	            }
 	            else {
-	            	  r.deplacement(5, 0);
+	            	perso.deplacement(5, 0);
 	            }
 		    break;
 
-		case NUMPAD9 : r.setFill(Color.BLACK);
+		case NUMPAD9 : perso.setFill(Color.BLACK);
         break;
-		case NUMPAD8 : r.setFill(Color.CHOCOLATE);
+		case NUMPAD8 : perso.setFill(Color.CHOCOLATE);
         break;
-		case NUMPAD7 : r.setFill(Color.RED);
+		case NUMPAD7 : perso.setFill(Color.RED);
         break;
-		case NUMPAD6 : r.setFill(Color.BLUE);
+		case NUMPAD6 : perso.setFill(Color.BLUE);
         break;
-		case NUMPAD5 : r.setFill(Color.MAROON);
+		case NUMPAD5 : perso.setFill(Color.MAROON);
         break;
-		case NUMPAD4 : r.setFill(Color.GREEN);
+		case NUMPAD4 : perso.setFill(Color.GREEN);
         break;
-		case NUMPAD3 : r.setFill(Color.CORNFLOWERBLUE);
+		case NUMPAD3 : perso.setFill(Color.CORNFLOWERBLUE);
         break;
-		case NUMPAD2 : r.setFill(Color.BLUEVIOLET);
+		case NUMPAD2 : perso.setFill(Color.BLUEVIOLET);
         break;
-		case NUMPAD1 : r.setFill(Color.YELLOW);
+		case NUMPAD1 : perso.setFill(Color.YELLOW);
         break;
 		case ADD: bonus += 5;
 		break;
 		case SUBTRACT: bonus -= 5;
 		break;
-		case ESCAPE: start(importedstage);
+		case ESCAPE: {
+			
+			Sauvegarde.setPerso(perso);
+			Sauvegarde.setNiveau(niveau);
+			Sauvegarde.setGoal2D(goal2D);
+			
+			Scene sc = root.getScene();
+			sc.setRoot(new AnchorPane());
+			start(importedstage);
+		}
 		break;
 		}
 		
-		return r;		
+		return perso;		
 	}
 	
 	public void inactive(AnchorPane root){
@@ -302,6 +315,40 @@ public class Main_Exercice_04 extends Application implements Initializable{
 
 	public void retourMenu(){
 		start(stagePrincipal);
+	}
+	
+	public void retourPartie(Scene scene){
+		
+        AnchorPane root_ = Sauvegarde.getNiveau().getFullGame();
+        
+		Personnage2D r0 = Sauvegarde.getNiveau().getPerso();
+		Goal2D g0 = Sauvegarde.getNiveau().getGoal2D();
+		
+		r0.toFront();
+		r0.cacherLesFleches();
+
+		scene.setRoot(root_);
+		Stage stagePrincipal = (Stage) scene.getWindow();
+		
+		stagePrincipal.setWidth(1005);
+		stagePrincipal.setHeight(635);
+
+		root.setOnMouseClicked(e -> gerer_clicks(r0, e));
+		scene.setOnKeyPressed(e1 -> gerer_keys(e1, root_, stagePrincipal, Sauvegarde.getNiveau()));
+		
+		for (Mur2D mur : Sauvegarde.getNiveau().getListeDesMurs()){
+			mur.setOnMouseEntered(c -> {
+				if (c.isAltDown())
+				afficheInfos(root_, mur, c, true);
+			});
+			mur.setOnMouseExited(d -> {
+				afficheInfos(root_, mur, d, false);
+			});
+		}
+		
+		scene.setOnMouseMoved(e -> {
+				gerer_sourisBouge(e, root_, !e.isAltDown());
+		});
 	}
 	
 	public void nouvelleFenetre(){
