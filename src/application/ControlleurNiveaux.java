@@ -38,6 +38,7 @@ import models.Mur2D;
 import models.Niveau;
 import models.Personnage2D;
 import models.Settings;
+import models.Temps;
 
 public class ControlleurNiveaux implements Initializable{
 	
@@ -213,6 +214,8 @@ public class ControlleurNiveaux implements Initializable{
 		Niveau niveau = tableauDesNiveaux.get(me.getSource());
 		AnchorPane root_ = niveau.getFullGame();
         
+		niveau.setHorloge(new Temps(0, 0, 0, 0, 0, 0));
+		
 		Personnage2D r0 = niveau.getPerso();
 		Goal2D g0 = niveau.getGoal2D();
 		
@@ -221,7 +224,11 @@ public class ControlleurNiveaux implements Initializable{
 		Fleche fd = r0.getFleches().get(Sens.DROITE);
 		Fleche fg = r0.getFleches().get(Sens.GAUCHE);
 		
-		root_.getChildren().add(r0);
+		HBox horloge = niveau.getHorloge().getAffichage();
+		horloge.setLayoutX(850);
+		horloge.setLayoutY(15);
+		
+		root_.getChildren().addAll(horloge, r0);
 		root_.getChildren().addAll(fb, fh, fd, fg, g0);
 		
 		r0.toFront();
@@ -235,6 +242,26 @@ public class ControlleurNiveaux implements Initializable{
 
 		root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
 		scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(e1, root_, stagePrincipal, niveau));
+		
+		Runnable chrono = new Runnable() {
+			
+			@Override
+			public void run() {
+				while (true){
+					try {
+						Thread.sleep(100);
+						niveau.getHorloge().getUpdate().getAffichage();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		};
+		
+		Thread t = new Thread(chrono);
+		t.start();
 		
 		for (Mur2D mur : niveau.getListeDesMurs()){
 			mur.setOnMouseEntered(c -> {

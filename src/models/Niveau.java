@@ -12,6 +12,7 @@ public class Niveau extends AnchorPane {
 	private AnchorPane fullGame;
 	private Personnage2D perso;
 	private Goal2D goal2D;
+	private Temps horloge;
 
 	public String getNom() {
 		return nom;
@@ -40,7 +41,13 @@ public class Niveau extends AnchorPane {
 	public ObservableList<Mur2D> getListeDesMurs() {
 		return listeDesMurs(fullGame.getChildrenUnmodifiable());
 	}
-    public Goal2D getGoal2D() {
+    public Temps getHorloge() {
+		return horloge;
+	}
+	public void setHorloge(Temps horloge) {
+		this.horloge = horloge;
+	}
+	public Goal2D getGoal2D() {
 		return goal2D;
 	}
 	public void setGoal2D(Goal2D goal2d) {
