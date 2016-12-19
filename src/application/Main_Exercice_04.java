@@ -16,6 +16,7 @@ import models.Niveau;
 import models.Personnage2D;
 import models.Sauvegarde;
 import models.Settings;
+import models.Temps;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -84,6 +85,7 @@ public class Main_Exercice_04 extends Application implements Initializable{
 			primaryStage.setWidth(600);
 			primaryStage.setHeight(435);
 			primaryStage.show();
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -93,6 +95,20 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		
 		Personnage2D perso = niveau.getPerso();
 		Goal2D goal2D = niveau.getGoal2D();
+		
+		if (niveau.getChronoThread() == null){
+			
+			niveau.getHorloge().getH11c1().textProperty().unbind();
+			niveau.getHorloge().getH11c1().textProperty().bind(niveau.getChronoTask().messageProperty());
+			
+			Thread t = new Thread(niveau.getChronoTask());
+			niveau.setChronoThread(t);
+			t.start();
+			
+			importedstage.setOnCloseRequest(a -> niveau.getChronoTask().cancel());
+			
+			
+		}
 		
         if (perso.getRectangle2D().intersects(goal2D.getRectangle2D())){
 			
@@ -196,6 +212,8 @@ public class Main_Exercice_04 extends Application implements Initializable{
 		case SUBTRACT: bonus -= 5;
 		break;
 		case ESCAPE: {
+			
+			niveau.getChronoThread().interrupt();
 			
 			Sauvegarde.setPerso(perso);
 			Sauvegarde.setNiveau(niveau);

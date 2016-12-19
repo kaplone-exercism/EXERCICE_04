@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -13,6 +17,7 @@ import enums.Orientation;
 import enums.Sens;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -50,6 +55,11 @@ public class ControlleurNiveaux implements Initializable{
 	private static Image im;
 	private static ImageView imv;
 	
+	private Runnable chrono;
+	private HBox temps;
+	
+	private Niveau niveau;
+	
 	public AnchorPane init(AnchorPane root, Main_Exercice_04 main_Exercice_04) {
 
 		final Scene scene = root.getScene();
@@ -69,6 +79,7 @@ public class ControlleurNiveaux implements Initializable{
         AnchorPane fullGame = null;
         Goal2D goal = null;
         Niveau niveau = new Niveau();
+        temps = null;
         final Map<AnchorPane, Niveau> tableauDesNiveaux = new HashMap<>();
     	
 		try {
@@ -86,7 +97,7 @@ public class ControlleurNiveaux implements Initializable{
 	    		else if(s.startsWith("[")){
 	    			
 	    			if(hb != null){
-	    				
+	    					    				
 	    				hb.getChildren().add(preview);
 	    				vb.getChildren().add(hb);
 	    				niveau.setFullGame(fullGame);
@@ -120,7 +131,12 @@ public class ControlleurNiveaux implements Initializable{
 	    			niveau.setNom(s.split("\\[")[1].split("\\]")[0]);
 	    			
 	    			l = new Label(niveau.getNom() + " : ");
-	    			hb.getChildren().add(l);				
+	    			hb.getChildren().add(l);
+	    			
+
+    				niveau.setHorloge(new Temps(5, 4, 14, 24, 3, 7));
+    				niveau.setChronoTask(createWorker());
+    				fullGame.getChildren().add(niveau.getHorloge().getH1());
 	    		}
 	    		else {
 	    			String marqueur = s.split("=")[0].trim().toUpperCase();
@@ -146,6 +162,7 @@ public class ControlleurNiveaux implements Initializable{
 		    			int fin = Integer.parseInt(ligne.split(",")[4].trim());
 		    			String nom = ligne.split(",").length > 5 ? ligne.split(",")[5].trim() : "Sans nom";
 		    			fullGame.getChildren().add(new Mur2D(or, epais, dist, debut, fin, nom));
+		    			
 		    			
 		    			epais = epais / 5;
 		    			dist = dist / 5;
@@ -213,8 +230,6 @@ public class ControlleurNiveaux implements Initializable{
 		
 		Niveau niveau = tableauDesNiveaux.get(me.getSource());
 		AnchorPane root_ = niveau.getFullGame();
-        
-		niveau.setHorloge(new Temps(0, 0, 0, 0, 0, 0));
 		
 		Personnage2D r0 = niveau.getPerso();
 		Goal2D g0 = niveau.getGoal2D();
@@ -223,12 +238,8 @@ public class ControlleurNiveaux implements Initializable{
 		Fleche fh = r0.getFleches().get(Sens.HAUT);
 		Fleche fd = r0.getFleches().get(Sens.DROITE);
 		Fleche fg = r0.getFleches().get(Sens.GAUCHE);
-		
-		HBox horloge = niveau.getHorloge().getAffichage();
-		horloge.setLayoutX(850);
-		horloge.setLayoutY(15);
-		
-		root_.getChildren().addAll(horloge, r0);
+
+		root_.getChildren().add(r0);
 		root_.getChildren().addAll(fb, fh, fd, fg, g0);
 		
 		r0.toFront();
@@ -242,27 +253,7 @@ public class ControlleurNiveaux implements Initializable{
 
 		root.setOnMouseClicked(e -> main_Exercice_04.gerer_clicks(r0, e));
 		scene.setOnKeyPressed(e1 -> main_Exercice_04.gerer_keys(e1, root_, stagePrincipal, niveau));
-		
-		Runnable chrono = new Runnable() {
-			
-			@Override
-			public void run() {
-				while (true){
-					try {
-						Thread.sleep(100);
-						niveau.getHorloge().getUpdate().getAffichage();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-			}
-		};
-		
-		Thread t = new Thread(chrono);
-		t.start();
-		
+	
 		for (Mur2D mur : niveau.getListeDesMurs()){
 			mur.setOnMouseEntered(c -> {
 				if (c.isAltDown())
@@ -277,6 +268,32 @@ public class ControlleurNiveaux implements Initializable{
 				main_Exercice_04.gerer_sourisBouge(e, root_, !e.isAltDown());
 		});
 	}
+	
+	public Task<Object> createWorker() {
+        return new Task<Object>() {
+            @Override
+            protected Object call() throws Exception {
+            	
+            	Temps horloge = new Temps(5, 4, 14, 24, 3, 7);
+            	
+            	LocalDateTime debut = LocalDateTime.now();
+
+            	boolean boucle = true;
+            	while (boucle){
+                    Thread.sleep(50);
+                    
+            		Duration duree = Duration.between(debut, LocalDateTime.now());
+            		
+            		long secondes = duree.getSeconds() % 60;
+            		long minutes = duree.getSeconds() / 60;
+            		long dixiemes = ((duree.getNano() / 1000000) % 1000) / 100;
+
+                    updateMessage(String.format("%02d:%02d.%d", minutes, secondes, dixiemes));
+                }
+                return true;
+            }
+        };
+    }
 	
 	public ObservableList<Mur2D> listeDesMurs(ObservableList<Node> listeDesNoeuds){
 		
@@ -298,5 +315,13 @@ public class ControlleurNiveaux implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public Runnable getChrono() {
+		return chrono;
+	}
+
+	public void setChrono(Runnable chrono) {
+		this.chrono = chrono;
 	}
 }

@@ -2,6 +2,7 @@ package models;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
@@ -12,7 +13,10 @@ public class Niveau extends AnchorPane {
 	private AnchorPane fullGame;
 	private Personnage2D perso;
 	private Goal2D goal2D;
+	
 	private Temps horloge;
+    private Thread chronoThread;
+	private Task<Object> chronoTask;
 
 	public String getNom() {
 		return nom;
@@ -53,6 +57,13 @@ public class Niveau extends AnchorPane {
 	public void setGoal2D(Goal2D goal2d) {
 		goal2D = goal2d;
 	}
+	public Thread getChronoThread() {
+		return chronoThread;
+	}
+	public void setChronoThread(Thread chronoThread) {
+		this.chronoThread = chronoThread;
+	}
+	
 	private ObservableList<Mur2D> listeDesMurs(ObservableList<Node> listeDesNoeuds){
 		
 		ObservableList<Mur2D> retour = FXCollections.observableArrayList();
@@ -63,5 +74,11 @@ public class Niveau extends AnchorPane {
 			}
 		}
 		return retour;
+	}
+	public Task<Object> getChronoTask() {
+		return chronoTask;
+	}
+	public void setChronoTask(Task<Object> task) {
+		this.chronoTask = task;
 	}
 }
