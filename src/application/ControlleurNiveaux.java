@@ -274,21 +274,25 @@ public class ControlleurNiveaux implements Initializable{
             @Override
             protected Object call() throws Exception {
             	
+            	updateMessage("00:00.00");
+            	
             	Temps horloge = new Temps(5, 4, 14, 24, 3, 7);
             	
             	LocalDateTime debut = LocalDateTime.now();
 
             	boolean boucle = true;
             	while (boucle){
-                    Thread.sleep(50);
-                    
+            			
+            		Thread.sleep(10);     
             		Duration duree = Duration.between(debut, LocalDateTime.now());
             		
             		long secondes = duree.getSeconds() % 60;
             		long minutes = duree.getSeconds() / 60;
-            		long dixiemes = ((duree.getNano() / 1000000) % 1000) / 100;
+            		long dixiemes = ((duree.getNano() / 1000000) % 1000) / 10;
 
-                    updateMessage(String.format("%02d:%02d.%d", minutes, secondes, dixiemes));
+                    updateMessage(String.format("%02d:%02d.%02d", minutes, secondes, dixiemes));
+                    
+                    
                 }
                 return true;
             }
